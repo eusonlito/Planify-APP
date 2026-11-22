@@ -1,5 +1,9 @@
 package com.lito.planify.ui.screens
 
+import androidx.activity.compose.BackHandler
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import com.lito.planify.updates.SystemUpdatePanel
 import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.background
@@ -69,12 +73,24 @@ fun ProfileScreen(
         email = userEmail ?: ""
     }
 
-    val persons by personViewModel.persons.collectAsState()
-    val personError by personViewModel.error.collectAsState()
-    var editingPerson by remember { mutableStateOf<PersonResponse?>(null) }
-    var showNewPerson by remember { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) { personViewModel.fetchPersons() }
+    var panel by rememberSaveable { mutableStateOf<ProfilePanel?>(null) }
+    if (panel != null) {
+        BackHandler { panel = null }
+        Column(
+            Modifier.fillMaxSize().safeDrawingPadding().imePadding().verticalScroll(rememberScrollState()).padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                IconButton(onClick = { panel = null }) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver al perfil")
+                }
+                Text(if (panel == ProfilePanel.People) stringResource(R.string.persons_title) else "Actualizaciones",
+                    style = MaterialTheme.typography.headlineMedium)
+            }
+            if (panel == ProfilePanel.People) PeoplePanel(personViewModel) else SystemUpdatePanel()
+        }
+        return
+    }
 
     Scaffold(
         containerColor = Color.Transparent,
@@ -165,13 +181,8 @@ fun ProfileScreen(
                 isLoading = isLoading
             )
 
-            PersonsSection(
-                persons = persons,
-                error = personError,
-                onErrorClick = { personViewModel.clearError() },
-                onEdit = { editingPerson = it },
-                onAdd = { showNewPerson = true }
-            )
+            TonalButton(stringResource(R.string.persons_title), { panel = ProfilePanel.People }, Modifier.fillMaxWidth())
+            TonalButton("Actualizaciones", { panel = ProfilePanel.Updates }, Modifier.fillMaxWidth())
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -259,6 +270,27 @@ fun ProfileScreen(
         }
     }
 
+}
+
+private enum class ProfilePanel { People, Updates }
+
+@Composable
+private fun PeoplePanel(personViewModel: PersonViewModel) {
+    val persons by personViewModel.persons.collectAsState()
+    val personError by personViewModel.error.collectAsState()
+    var editingPerson by remember { mutableStateOf<PersonResponse?>(null) }
+    var showNewPerson by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) { personViewModel.fetchPersons() }
+
+    PersonsSection(
+        persons = persons,
+        error = personError,
+        onErrorClick = { personViewModel.clearError() },
+        onEdit = { editingPerson = it },
+        onAdd = { showNewPerson = true }
+    )
+
     if (showNewPerson) {
         PersonFormDialog(
             initial = null,
@@ -296,8 +328,6 @@ private fun PersonsSection(
     onAdd: () -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.padding(top = 8.dp)) {
-        Text(stringResource(R.string.persons_title), style = MaterialTheme.typography.titleLarge, color = OnSurfaceColor)
-
         error?.let {
             Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error, modifier = Modifier.clickable(onClick = onErrorClick))
         }

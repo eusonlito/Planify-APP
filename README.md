@@ -110,7 +110,7 @@ El móvil programa los 450 avisos más próximos y conserva el resto en caché. 
 
 ## Personas
 
-Desde Perfil se crean personas (por ejemplo, los miembros de la familia) con nombre y color, y se asignan una o varias a cada evento o rutina. Las ven y asignan todos los usuarios que comparten algún calendario con quien las creó; solo el creador puede editarlas o borrarlas. Las sesiones de una rutina muestran las personas de la rutina. Requiere la migración `backend/migrations/0007_person.sql`.
+Desde Perfil → Personas se crean personas (por ejemplo, los miembros de la familia) con nombre y color, y se asignan una o varias a cada evento o rutina. Las ven y asignan todos los usuarios que comparten algún calendario con quien las creó; solo el creador puede editarlas o borrarlas. Las sesiones de una rutina muestran las personas de la rutina. Requiere la migración `backend/migrations/0007_person.sql`.
 
 ## Scripts locales
 
@@ -121,3 +121,9 @@ Los scripts de `scripts/` son locales y están excluidos de Git:
 * `scripts/git-reset`: utilidad general para reiniciar el historial de un repositorio Git; no despliega la app ni el backend.
 
 El despliegue del backend corresponde a `../backend/scripts/install.sh`. Los scripts de instalación y emulador resuelven sus rutas desde su ubicación, por lo que pueden ejecutarse desde cualquier directorio.
+
+## Actualizaciones desde Android
+
+En **Perfil → Actualizaciones** se muestra la versión instalada y se consulta la última release estable de este repositorio. El usuario descarga el APK y confirma la instalación en Android. La primera vez puede ser necesario permitir instalaciones desde esta aplicación. La descarga comprueba el SHA-256, el identificador de paquete, la firma y que aumente el código de versión.
+
+Las instalaciones antiguas necesitan recibir una primera versión con el actualizador por el método habitual. Para preparar futuras actualizaciones, incrementa `versionCode` y `versionName` (mayor.menor.parche) en `android/app/build.gradle.kts` y ejecuta `python3 android/prepare-update.py` desde este repositorio con la clave habitual de la instalación. El comando verifica y prepara **en local** los dos archivos. Tras obtener autorización para esa publicación, la release estable debe llevar la etiqueta `v<versionName>` y los adjuntos `Planify.apk` y `Planify.apk.sha256` del directorio indicado.

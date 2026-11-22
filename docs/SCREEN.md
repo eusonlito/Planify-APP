@@ -127,7 +127,8 @@ El selector de **Personas** (chips multiselección con el color de cada persona)
 
 - **Información:** Muestra Nombre y Email actuales.
 - **Edición:** Activa campos de texto para actualizar Nombre, Email o Contraseña (con las optimizaciones de teclado antes mencionadas).
-- **Personas:** Lista de personas asignables a eventos y rutinas, con botón "Nueva persona". Las creadas por otros usuarios que comparten calendario aparecen como "Compartida" y no se pueden editar.
+- **Personas:** Abre un panel propio con la lista de personas asignables a eventos y rutinas y el botón "Nueva persona". Las creadas por otros usuarios que comparten calendario aparecen como "Compartida" y no se pueden editar.
+- **Actualizaciones:** Abre el panel que muestra la versión instalada y permite buscar, descargar e instalar una actualización.
 - **Crash Reporter:** Si hubo un cierre inesperado, muestra una tarjeta roja para ver o borrar el log de errores.
 - **Acciones:** Botón "Guardar", "Editar" y "Salir" (limpia caché de widgets).
 
