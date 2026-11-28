@@ -61,12 +61,6 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
 
     fun createTask(taskListId: Int?, title: String, refreshListId: Int? = taskListId) {
         val tId = taskListId ?: 0
-        val exists = _tasks.value.any { it.title.trim().equals(title.trim(), ignoreCase = true) && it.task_list_id == tId }
-        if (exists) {
-            _error.value = getApplication<Application>().getString(com.lito.planify.R.string.error_task_exists)
-            return
-        }
-
         viewModelScope.launch {
             _isLoading.value = true
             try {

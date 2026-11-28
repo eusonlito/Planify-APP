@@ -193,8 +193,12 @@ class TasksWidgetProvider : AppWidgetProvider() {
 
         val toggling = prefs.getStringSet("widget_toggling_tasks", emptySet()).orEmpty().mapNotNull { it.toIntOrNull() }.toSet()
         val items = RemoteViewsCompat.RemoteCollectionItems.Builder().setHasStableIds(true)
-        tasks.filter { currentList.id == 0 || it.task_list_id == currentList.id }
-            .forEach { items.addItem(it.id.toLong(), taskItem(context, it, it.id in toggling)) }
+        val visibleTasks = if (currentList.id == 0) {
+            tasks.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.title })
+        } else {
+            tasks.filter { it.task_list_id == currentList.id }
+        }
+        visibleTasks.forEach { items.addItem(it.id.toLong(), taskItem(context, it, it.id in toggling)) }
         RemoteViewsCompat.setRemoteAdapter(context, views, appWidgetId, R.id.widget_tasks_list, items.build())
         views.setEmptyView(R.id.widget_tasks_list, R.id.widget_tasks_empty)
 
